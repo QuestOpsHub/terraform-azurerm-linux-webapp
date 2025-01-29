@@ -7,6 +7,9 @@ Terraform module to create a Linux Web App along with a deployment slot and mana
 - [Azure Resource Naming Convention](#azure-resource-naming-convention)
     - [Format](#Format)
     - [Components](#Components)
+- [lifecycle-block](#lifecycle-block)
+- [ip_restriction-block](#ip_restriction-block)
+- [App Settings](#app-settings)
 - [Requirements](#requirements)
 - [Providers](#providers)
 - [Modules](#modules)
@@ -33,6 +36,43 @@ Resource names should clearly indicate their type, workload, environment, and re
 | `environment`            | Environment where the resource is deployed (`prod`, `dev`, `test`, etc.).           | `prod`                 |
 | `region`                 | Azure region where the resource resides (e.g., `cus` for `centralus`).              | `cus`                  |
 | `optional_unique_suffix` | Optional unique string for ensuring name uniqueness, often random or incremental.    | `abcd`, `a42n`                 |
+
+## lifecycle-block
+
+- To add the lifecycle block to your configuration, use the following code:
+
+```hcl
+site_config[0].application_stack
+```
+
+## ip_restriction-block
+
+```hcl
+ip_restriction = {
+    AzureFrontDoor = {
+        name        = "AzureFrontDoor"
+        action      = "Allow"
+        service_tag = "AzureFrontDoor.Backend"
+        headers = {
+            x_azure_fdid = ["XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"]
+        }
+    },
+    Onpremproxy = {
+        name       = "Onpremproxy"
+        action     = "Allow"
+        ip_address = "XXX.XXX.XX.XX/XX"
+    }
+}
+```
+
+## App Settings
+
+- Attempts to import these values will fail.
+
+```hcl
+WEBSITE_HEALTHCHECK_MAXPINGFAILURES        = "5"
+WEBSITE_HTTPLOGGING_RETENTION_DAYS         = "5"
+```
 
 ## Requirements
 

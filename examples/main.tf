@@ -2,7 +2,8 @@
 # Random String
 #---------------
 module "random_string" {
-  source  = "git::https://github.com/QuestOpsHub/QuestOpsHub-terraform-azure-modules.git//randomString?ref=main"
+  source = "git::https://github.com/QuestOpsHub/terraform-azurerm-random-string.git?ref=v1.0.0"
+
   length  = 4
   lower   = true
   numeric = true
@@ -13,20 +14,12 @@ module "random_string" {
 #----------------
 # Resource Group
 #----------------
-locals {
-  resource_suffix = "hub-dev-cus"
-  resource_short  = "app-linux"
-}
-
 module "resource_group" {
-  source = "git::https://github.com/QuestOpsHub/QuestOpsHub-terraform-azure-modules.git//resourceGroup?ref=main"
+  source = "git::https://github.com/QuestOpsHub/terraform-azurerm-resource-group.git?ref=v1.0.0"
 
-  name     = "rg-${local.resource_short}-${local.resource_suffix}-${module.random_string.result}"
+  name     = "rg-${local.resource_suffix}-${module.random_string.result}"
   location = "centralus"
-  tags = {
-    source         = "manual"
-    safe-to-delete = "yes"
-  }
+  tags     = merge(local.resource_tags, local.timestamp_tag)
 }
 
 #--------------
